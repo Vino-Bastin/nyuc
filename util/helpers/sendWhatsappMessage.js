@@ -48,7 +48,7 @@ module.exports = async (users, template, templateName) => {
         await workbook.xlsx.writeFile(filePath);
     } catch (err) {
         logger.error("Errored Happened while sending whatsapp message");
-        logger.error(err);
+        logger.error(err.message);
     }
 };
 
@@ -76,7 +76,7 @@ const sendWhatsAppMessage = async (user, template, templateName) => {
     if (template.headerType == "text") headerValues.push(template.headerText);
     else if (template.headerType == "image") headerValues.push(template.imageUrl);
 
-    template.bodyVariables.replace(/\${(.*?)}/g, function (match, key) {
+    template.bodyVariables.map(function (key) {
         let keys = key.split(".");
         let value = user;
         for (let i = 0; i < keys.length; i++) {
