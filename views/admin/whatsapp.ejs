@@ -1,0 +1,317 @@
+<style>
+    button {
+        text-transform: none !important;
+        min-width: 150px;
+    }
+    .line {
+        flex: 1;
+        height: 1px;
+        background-color: #6c757d;
+    }
+    .text-sm {
+        font-size: 14px;
+    }
+    .body-variable-item {
+        position: relative;
+    }
+    .body-variable-item::after {
+        position: absolute;
+        content: "x";
+        top: 50%;
+        right: 5px;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 50%;
+        transform: translateY(-50%);
+        width: 15px;
+        height: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: end;
+        cursor: pointer;
+    }
+</style>
+<div id="wrapper">
+    <%- include("./partials/sidebar") %>
+    <div id="page-content-wrapper">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center" style="gap: 20px; font-size: 20px; color: #0b5ed7; font-weight: 600">
+                <i style="cursor: pointer" onclick="$('#wrapper').toggleClass('toggled');" class="fa-solid fa-bars"></i>
+                Whatsapp
+            </div>
+            <div class="d-flex align-items-center" style="gap: 20px; font-size: 20px">
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#create-template-modal">Create template</button>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#send-whatsapp-message-modal">Send message</button>
+            </div>
+        </div>
+        <div class="mt-5">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Template Name</th>
+                        <th>Interakt Id</th>
+                        <th>Header Type</th>
+                        <th>Body Variables</th>
+                    </tr>
+                </thead>
+                <tbody id="template-list"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="create-template-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="create-template-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h1 class="modal-title fs-5" id="create-template-modal-label">Create Whatsapp template</h1>
+                <button type="button" style="min-width: auto" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mx-5">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label for="template-name" class="form-label">Template name</label>
+                            <input type="text" class="form-control" id="template-name" placeholder="Enter template name" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label for="interakt-id" class="form-label">Interakt Id</label>
+                            <input type="text" class="form-control" id="interakt-id" placeholder="Enter Interakt id" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label for="header-type" class="form-label">Header Type</label>
+                            <select id="header-type" class="form-select">
+                                <option value="" selected class="d-none">Please select header type</option>
+                                <option value="text">Text</option>
+                                <option value="image">Image</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6" style="display: none">
+                        <div class="form-group">
+                            <label for="header-header-url" class="form-label">Header Text</label>
+                            <input type="text" class="form-control" id="header-header-url" placeholder="Enter header text" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6" style="display: none">
+                        <div class="form-group">
+                            <label for="header-image-url" class="form-label">Image URL</label>
+                            <input type="text" class="form-control" id="header-image-url" placeholder="Enter image URL" />
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex align-items-center justify-content-between" style="gap: 20px">
+                            <label class="form-label">Body Variable</label>
+                            <div class="line"></div>
+                            <button class="btn btn-sm btn-outline-secondary" id="add-variable-btn">Add Variable</button>
+                        </div>
+                        <div class="row g-3 mt-2" id="body-variable-list"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary" id="create-template">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- body variables modal -->
+<div class="modal fade" id="body-variable-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="body-variable-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <div>
+                    <h1 class="modal-title fs-5" id="body-variable-modal-label">Add body variable</h1>
+                    <p class="text-muted text-sm mb-0">Please click the item to add variable</p>
+                </div>
+                <button type="button" style="min-width: auto" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div id="body-variable-add-list" style="gap: 10px; display: flex; flex-direction: column">
+                    <div class="col-12 border">
+                        <div class="text-sm p-2" data-value="profile.firstName">First Name</div>
+                    </div>
+                    <div class="col-12 border">
+                        <div class="text-sm p-2" data-value="profile.lastName">Last Name</div>
+                    </div>
+                    <div class="col-12 border">
+                        <div class="text-sm p-2" data-value="email">Email</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- * send whatsapp message modal -->
+<div class="modal fade" id="send-whatsapp-message-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="send-whatsapp-message-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h1 class="modal-title fs-5" id="send-whatsapp-message-modal-label">Send Whatsapp message</h1>
+                <button type="button" style="min-width: auto" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mx-5">
+                    <label for="send-whatsapp-template">Template Name</label>
+                    <select class="form-select" id="send-whatsapp-template">
+                        <option value="" selected class="d-none">Please select template</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary" id="send-whatsapp-message">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    $(document).ready(() => {
+        getTemplates();
+    });
+    $("#add-variable-btn").click(() => {
+        $("#create-template-modal").css("z-index", 1040);
+        $("#body-variable-modal").modal("show");
+    });
+    $("#body-variable-modal").on("hidden.bs.modal", () => {
+        $("#create-template-modal").css("z-index", 1054);
+    });
+    // * add body variable item
+    $("#body-variable-add-list").on("click", ".text-sm", function () {
+        const value = $(this).attr("data-value");
+        const name = $(this).text();
+        $("#body-variable-list").append(
+            `<div class="col-12 col-md-6">
+                <div class="text-sm p-2 border body-variable-item" data-value="${value}">
+                    ${name}
+                </div>
+            </div>`
+        );
+        $("#body-variable-modal").modal("hide");
+    });
+    // * remove body variable item
+    $("#body-variable-list").on("click", ".body-variable-item", function () {
+        $(this).parent().remove();
+    });
+    // * header type change
+    $("#header-type").change(function () {
+        const value = $(this).val();
+        if (value === "text") {
+            $("#header-header-url").parent().parent().show();
+            $("#header-image-url").parent().parent().hide();
+        } else if (value === "image") {
+            $("#header-header-url").parent().parent().hide();
+            $("#header-image-url").parent().parent().show();
+        } else {
+            $("#header-header-url").parent().parent().hide();
+            $("#header-image-url").parent().parent().hide();
+        }
+    });
+    // * reset modal hide event
+    $("#create-template-modal").on("hidden.bs.modal", function () {
+        $("#header-header-url").parent().parent().hide();
+        $("#header-image-url").parent().parent().hide();
+        $("#header-type").val("");
+        $("#template-name").val("");
+        $("#interakt-id").val("");
+        $("#body-variable-list").empty();
+    });
+    // * create template
+    $("#create-template").click(async () => {
+        try {
+            const payload = templatePayload();
+            if (!payload) return;
+            const apiCall = await fetch("/admin/whatsapp/template", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+            const response = await apiCall.json();
+            if (!response.ok) return failureAlert("Failed to create template");
+            swal.fire("Success", "Template created successfully", "success");
+            $("#create-template-modal").modal("hide");
+            getTemplates();
+        } catch (error) {
+            errorAlert("Something went wrong");
+        }
+    });
+    function templatePayload() {
+        const payload = {
+            name: $("#template-name").val(),
+            interaktId: $("#interakt-id").val(),
+            headerType: $("#header-type").val(),
+            headerText: $("#header-header-url").val(),
+            imageUrl: $("#header-image-url").val(),
+            bodyVariables: [],
+        };
+
+        $("#body-variable-list")
+            .children()
+            .each(function () {
+                payload.bodyVariables.push($(this).find(".body-variable-item").attr("data-value"));
+            });
+
+        if (!payload.name) return errorAlert("Please enter template name");
+        if (!payload.interaktId) return errorAlert("Please enter interakt id");
+
+        return payload;
+    }
+
+    // * get templates
+    async function getTemplates() {
+        try {
+            const apiCall = await fetch("/admin/whatsapp/template");
+            const response = await apiCall.json();
+            if (!response.ok) return failureAlert("Failed to get templates");
+            const templates = response.templates || [];
+            $("#template-list").empty();
+            $("#send-whatsapp-template").html(`<option value="" selected class="d-none">Please select template</option>`);
+            templates.forEach((template, index) => {
+                $("#send-whatsapp-template").append(`<option value="${template.id}">${template.name}</option>`);
+                $("#template-list").append(
+                    `<tr>
+                        <td>${index + 1}</td>
+                        <td>${template.name}</td>
+                        <td>${template.interaktId}</td>
+                        <td>${template.headerType || "NA"}</td>
+                        <td>${template.bodyVariables.join(", ") || "NA"}</td>
+                    </tr>`
+                );
+            });
+        } catch (error) {
+            errorAlert("Something went wrong");
+        }
+    }
+    // * send whatsapp message
+    $("#send-whatsapp-message").click(async () => {
+        try {
+            const templateId = $("#send-whatsapp-template").val();
+            if (!templateId) return errorAlert("Please select template");
+            const payload = { templateId };
+            const apiCall = await fetch("/admin/whatsapp/send", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+            const response = await apiCall.json();
+            if (!response.ok) return failureAlert("Failed to send message");
+            swal.fire("Success", "Message sent successfully", "success");
+            $("#send-whatsapp-message-modal").modal("hide");
+        } catch (error) {
+            errorAlert("Something went wrong");
+        }
+    });
+</script>

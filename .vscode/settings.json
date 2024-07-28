@@ -1,0 +1,16 @@
+{
+    "cSpell.words": [
+        "exceljs",
+        "Interakt",
+        "nyuc",
+        "swal"
+    ],
+    "[javascript]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[ejs]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+}
